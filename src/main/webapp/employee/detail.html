@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detail</title>
+</head>
+<h1>Detail</h1>
+<a th:href="@{/employees}">Employee list</a>
+    <table border="1px">
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Date</td>
+            <td>Avatar</td>
+            <td>Gender</td>
+        </tr>
+        <tr>
+            <th th:text="${employee.id}"></th>
+            <th th:text="${employee.name}"></th>
+            <th th:text="${employee.date}"></th>
+            <th><img th:src="@{${employee.avatar}}"/></th>
+            <th th:text="${employee.gender}"></th>
+        </tr>
+    </table>
+
+</html>

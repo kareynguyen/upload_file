@@ -1,44 +1,113 @@
 package service;
 
 import model.Employee;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
 
-public class EmployeeService implements IEmployeeService {
-    List<Employee> employees = new ArrayList<>();
-    @Override
+@Service
+public class EmployeeService {
+    public static SessionFactory sessionFactory;
+    public static EntityManager entityManager;
+
+    static {
+        try {
+            sessionFactory = new Configuration().configure("hibernate.conf.xml").buildSessionFactory();
+            entityManager = sessionFactory.createEntityManager();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<Employee> findAll() {
-        return employees;
+        String queryStr = "select e from Employee as e";
+        TypedQuery<Employee> query = entityManager.createQuery(queryStr, Employee.class);
+        return query.getResultList();
     }
 
-    @Override
     public void save(Employee employee) {
-        employees.add(employee);
-    }
+        Session session =null;
+        Transaction transaction = null;
+        try {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
 
-    @Override
-    public Employee findById(int id) {
-        return employees.get(id);
-    }
-
-    @Override
-    public void update(int id, Employee employee) {
-        for (Employee p: employees) {
-            if (p.getId() == id){
-                p = employee;
-                break;
+           session.save(employee);
+            transaction.commit();
+        }
+        catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.close();
             }
         }
     }
 
-    @Override
-    public void remove(int id) {
-        for (int i = 0; i < employees.size(); i++) {
-            if (employees.get(i).getId() == id){
-                employees.remove(i);
-                break;
+    public Employee update(Employee employee) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            Employee emp = findById(employee.getId());
+            emp.setName(employee.getName());
+            emp.setDate(employee.getDate());
+            emp.setAvatar(employee.getAvatar());
+            emp.setGender(employee.isGender());
+
+            session.saveOrUpdate(emp);
+
+            transaction.commit();
+            return emp;
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.close();
             }
         }
+        return null;
+    }
+
+    public Employee findById(Long id) {
+        String queryStr = "select e from Employee as e where e.id = :id";
+        Employee employee = entityManager.createQuery(queryStr, Employee.class).setParameter("id", id).getSingleResult();
+        return employee;
+    }
+
+ @Transactional
+    public void remove(Long id) {
+     Session session = null;
+     Transaction transaction = null;
+     try {
+         session = sessionFactory.openSession();
+         transaction = session.beginTransaction();
+         Employee employee = findById(id);
+         session.remove(employee);
+         transaction.commit();
+     } catch (Exception e) {
+         if (transaction != null) {
+             transaction.rollback();
+         }
+     } finally {
+         if (session != null) {
+             session.close();
+         }
+     }
     }
 }

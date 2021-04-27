@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Delete employee</title>
+</head>
+<body>
+<h2>Are you sure to delete?</h2>
+<a th:href="@{/employees}">Employee list</a>
+<form  method="post" th:object="${delete}"  enctype="multipart/form-data">
+    <table border="1px">
+
+        <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Date</td>
+            <td>Avatar</td>
+            <td>Gender</td>
+        </tr>
+        <tr>
+            <th th:text="${delete.id}"></th>
+            <th th:text="${delete.name}"></th>
+            <th th:text="${delete.date}"></th>
+            <th><img th:src="@{${delete.avatar}}"/></th>
+            <th th:text="${delete.gender}"></th>
+        </tr>
+
+        <input type="submit" value="Delete"/>
+
+    </table>
+</form>
+</body>
+</html>

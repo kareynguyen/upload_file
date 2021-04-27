@@ -5,13 +5,16 @@
 <body>
 <h3>Add Employee</h3>
 <p>
-    <a th:href="@{/employee}">
+    <a th:href="@{/employees}">
         Back to employee list
     </a>
 </p>
+<th:block th:if="${message}">
+    <p th:text="${message}"></p>
+</th:block>
 
 <div>
-    <form th:action="@{/employee/save}" method="post" th:object="${employeeForm}" enctype="multipart/form-data">
+    <form action="/save" method="post" th:object="${employeeForm}" enctype="multipart/form-data">
         <table border="1">
         <input type="hidden" th:field="*{id}">
 
@@ -32,9 +35,10 @@
            <select th:field = "*{gender}">
                <option value="0">Nam</option>
                <option value="1">Nữ</option>
+           </select>
         </div>
         <div>
-            <input type="submit" value="Save"/>
+            <input type="submit" value="Create"/>
         </div>
         </table>
     </form>
